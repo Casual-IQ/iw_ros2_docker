@@ -1,0 +1,15 @@
+# 设置变量 "WDIR" 为工作目录
+<% if @args[0] %>
+<% WDIR=@args[0] %> 
+<% else %>
+<% WDIR=ENV["PWD"] %>
+<% end %>
+
+name: <%= WDIR.split('/').last  %>
+root: <%= @args[0] %>
+
+windows:
+  - default:
+      layout: even-vertical
+      panes:
+        - 
