@@ -1,4 +1,4 @@
-## ROS2 Humble
+## ROS2 Humble for Innowing Workshop
 
 ```shell
 docker pull casualiq/iw_ros2_docker:latest
