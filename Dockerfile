@@ -62,6 +62,45 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 RUN gem install tmuxinator && \
     wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.zsh -O /usr/local/share/zsh/site-functions/_tmuxinator
 
+# 安装 librealsense
+RUN sudo apt-get update && sudo apt-get install -y \
+    libssl-dev \
+    libusb-1.0-0-dev \
+    libudev-dev \
+    pkg-config \
+    libgtk-3-dev \
+    libglfw3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN cd /root && \
+    git clone https://github.com/IntelRealSense/librealsense.git && \
+    cd librealsense && \
+    mkdir build && \
+    cd build && \
+    cmake ../ -DBUILD_EXAMPLES=true -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && \
+    make install
+
+# 安装 ament_cmake
+RUN sudo apt-get update && sudo apt-get install -y \
+    ros-humble-ament-cmake \
+    python3-ament-package \
+    ros-humble-rosidl-typesupport-c \
+    ros-humble-rosidl-default-generators
+
+# 设置 CMAKE_PREFIX_PATH
+ENV CMAKE_PREFIX_PATH=/opt/ros/humble:$CMAKE_PREFIX_PATH
+
+# # 克隆 realsense-ros 仓库并构建
+RUN cd /root/$WORKSPACE && \
+    mkdir -p src && \
+    cd src && \
+    git clone https://github.com/IntelRealSense/realsense-ros.git
+    # cd .. && \
+    # rosdep update && \
+    # rosdep install -i --from-path src --rosdistro $ROS_DISTRO --skip-keys=librealsense2 -y && \
+    # colcon build --symlink-install
+
 RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
